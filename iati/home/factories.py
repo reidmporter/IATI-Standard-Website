@@ -1,7 +1,9 @@
 import factory
+import factory.fuzzy
 from wagtail_factories import PageFactory
 from django.utils.text import slugify
 from wagtail.core.models import Page
+from home.models import StandardPage
 
 
 class BasePageFactory(PageFactory):
@@ -37,4 +39,14 @@ class BasePageFactory(PageFactory):
     excerpt_fr = factory.Faker(
         'paragraph',
         locale='fr_FR',
+    )
+
+
+class StandardPageFactory(BasePageFactory):
+
+    class Meta:
+        model = StandardPage
+
+    fixed_page_type = factory.fuzzy.FuzzyChoice(
+        choices=('privacy', 'terms', 'trans', None)
     )

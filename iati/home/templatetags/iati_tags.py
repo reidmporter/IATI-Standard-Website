@@ -26,7 +26,7 @@ register.filter('intcomma', intcomma)
 
 
 @register.simple_tag(takes_context=True)
-def default_page_url(context, default_page_name="home"):
+def default_page_url(context, default_page_name="home", test=None):
     """Return the relative url for a top-level default page.
 
     Todo:
@@ -47,7 +47,7 @@ def default_page_url(context, default_page_name="home"):
 
     default_page = page_model_names[default_page_name].objects.live().first()
 
-    if default_page is None or not hasattr(context, 'request'):
+    if default_page is None or not context.get('request'):
         return ''
     return default_page.get_url(context['request'])
 
