@@ -11,6 +11,7 @@ from home.templatetags.iati_tags import (
 
 @pytest.fixture()
 def events():
+    """Fixture to create batched EventPage tree."""
     home_page = HomePage.objects.first()
     event_page_index = EventIndexPageFactory(
         parent=home_page,
@@ -22,6 +23,7 @@ def events():
 
 @pytest.fixture()
 def standard_pages():
+    """Fixture to create batched StandardPages."""
     home_page = HomePage.objects.first()
     standard_pages = StandardPageFactory.create_batch(
         20,
@@ -37,14 +39,17 @@ class TestTemplateTags():
 
     @property
     def get_homepage(self):
+        """Return HomePage instance."""
         return HomePage.objects.first()
 
     def test_default_home_page_url(self, client):
+        """Test for return of relative URL for HomePage."""
         homepage_context = client.get(self.get_homepage.url, follow=False)
         default_url = default_page_url(homepage_context)
         assert default_url == ''
 
     def test_default_event_page_url(self, client, events):
+        """Test for return of relative URL for EventPage."""
         events_response = client.get(events.url, follow=True)
         default_event_url = default_page_url(
             context=events_response.context,
@@ -54,6 +59,7 @@ class TestTemplateTags():
         assert default_event_url != ''
 
     def test_check_active(self, client, events):
+        """Test for return of active class string for Events."""
         events_response = client.get(events.url, follow=True)
         active_class = check_active(
             context=events_response.context,
@@ -63,6 +69,7 @@ class TestTemplateTags():
         assert active_class == 'navigation-utility__item--active'
 
     def test_check_active_for_child(self, client, events):
+        """Test for return of active class string for Events children."""
         event_child = events.get_children().first()
         events_response = client.get(event_child.url, follow=True)
         active_class = check_active(
@@ -73,12 +80,12 @@ class TestTemplateTags():
 
     def test_standard_page_url(self, client, standard_pages):
         """
-        Testing the Standard Page URL based on page type assuming that
-        one page type exists for each page type.
-        """
+        Test the Standard Page URL based on page type.
 
-        standard_pages = [x for x in standard_pages if x.fixed_page_type == 'terms']
-        standard_page = standard_pages[0]
+        Assumes that one page instance exists for each page type
+        """
+        standard_pages = standard_pages.filter(fixed_page_type='terms')
+        standard_page = standard_pages.first()
         standard_page_response = client.get(standard_page.url, follow=True)
 
         # workaround to add request as attribute to mimic RequestContext
@@ -89,23 +96,24 @@ class TestTemplateTags():
         )
         assert standard_page_url_response == standard_page.url
 
-    # @pytest.mark.skip(reason="no way of currently testing this")
-    # def test_standard_page_url_for_blank_page_type(self, client, standard_pages):
-    #     standard_pages = standard_pages.filter(fixed_page_type__isnull=True)
-    #     standard_page = standard_pages.first()
-    #     standard_page_response = client.get(standard_page.url, follow=True)
+    @pytest.mark.skip(
+        reason='Template tag only handles the first Standard Page of a '
+               'specific fixed page type.'
+    )
+    def test_standard_page_url_for_null_page_type(self, client, standard_pages):
+        """Test the Standard Page URL based on null page type."""
+        standard_pages = standard_pages.filter(fixed_page_type__isnull=True)
+        standard_page = standard_pages.first()
+        standard_page_response = client.get(standard_page.url, follow=True)
 
-    #     # workaround to add request as attribute to mimic RequestContext
-    #     setattr(standard_page_response.context, 'request', standard_page_response.request)
-    #     standard_page_url_response = standard_page_url(
-    #         context=standard_page_response.context,
-    #         page_type=standard_page.fixed_page_type
-    #     )
-    #     assert standard_page_url_response == ''
-    # @register.simple_tag(takes_context=True)
-    # def standard_page_url(context, page_type):
-    #     """Return the relative url for other fixed pages based on the StandardPage."""
-    #     standard_page = StandardPage.objects.live().filter(fixed_page_type=page_type).first()
-    #     if standard_page is None or not hasattr(context, 'request'):
-    #         return ''
-    #     return standard_page.get_url(context['request'])
+        # workaround to add request as attribute to mimic RequestContext
+        setattr(
+            standard_page_response.context,
+            'request',
+            standard_page_response.request
+        )
+        with pytest.raises(TypeError) as e:
+            standard_page_url(
+                context=standard_page_response.context,
+            )
+        assert 'missing 1 required positional argument' in str(e)

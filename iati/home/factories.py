@@ -43,6 +43,7 @@ class BasePageFactory(PageFactory):
 
 
 class StandardPageFactory(BasePageFactory):
+    """Factory generating data for StandardPage models."""
 
     class Meta:
         model = StandardPage
