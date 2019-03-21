@@ -18,7 +18,9 @@ class TestNewsPage():
 
     def test_guidance_tree(self, client):
         """Test that event with random date is created."""
-        news_index = NewsIndexPageFactory.create()
+        news_index = NewsIndexPageFactory.create(
+            title='All News'
+        )
         NewsCategoryFactory.create_batch(10)
         NewsPageFactory.create_batch(10, parent=news_index)
 

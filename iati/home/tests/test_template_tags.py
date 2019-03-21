@@ -1,4 +1,5 @@
 import pytest
+from datetime import datetime
 from django.conf import settings
 from events.factories import EventIndexPageFactory, EventPageFactory
 from home.factories import StandardPageFactory
@@ -6,6 +7,7 @@ from home.models import HomePage, StandardPage
 from home.templatetags.iati_tags import (
     check_active,
     default_page_url,
+    haspassed,
     standard_page_url,
     translation_links,
 )
@@ -130,3 +132,8 @@ class TestTemplateTags():
         translation_response = client.get(fr_language['url'])
         assert translation_response.status_code == 200
         assert len(languages) == len(settings.ACTIVE_LANGUAGES)
+
+    def test_time_haspassed(self):
+        """Test past date returns True for haspassed."""
+        past_date = datetime.strptime('Jan 1 2000', '%b %d %Y')
+        assert haspassed(past_date) is True
