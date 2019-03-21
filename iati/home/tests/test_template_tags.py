@@ -1,7 +1,8 @@
 import pytest
+import random
 from datetime import datetime
 from django.conf import settings
-from events.factories import EventIndexPageFactory, EventPageFactory
+from events.factories import EventIndexPageFactory, EventPageFactory, EventTypeFactory
 from home.factories import StandardPageFactory
 from home.models import HomePage, StandardPage
 from home.templatetags.iati_tags import (
@@ -22,7 +23,11 @@ def events():
         parent=home_page,
         title='Events',
     )
-    EventPageFactory.create_batch(10, parent=event_page_index)
+    # event_types = EventTypeFactory.create_batch(10)
+    event_pages = EventPageFactory.create_batch(10, parent=event_page_index)
+
+    for event in event_pages:
+        event.events = [EventTypeFactory()]
     return event_page_index
 
 
@@ -140,11 +145,35 @@ class TestTemplateTags():
         assert haspassed(past_date) is True
 
     def test_two_part_date_different_dates(self):
-        """Test two part date."""
-        import locale
-        locale.setlocale(locale.LC_ALL, 'en_GB.UTF-8')
-        date_start = datetime.strptime('9 May 2019 9:00AM', '%d %b %Y %I:%M%p')
-        date_end = datetime.strptime('2 Mar 2019 9:00AM', '%d %b %Y %I:%M%p')
+        """Test two part date with different dates."""
+        from django.utils.translation import activate
+        activate('en')
+        date_start = datetime(2019, 3, 2, 9, 0)
+        date_end = datetime(2019, 5, 9, 9, 0)
         two_part_date = twopartdate(date_start, date_end)
+        assert two_part_date['part1'].startswith('March 2, 2019')
+        assert two_part_date['part2'].startswith('May 9, 2019')
 
-        assert not two_part_date['part1'].startswith('9 May 2019')
+    def test_two_part_date_same_dates(self):
+        """Test two part date with same date, different times."""
+        from django.utils.translation import activate
+        activate('en')
+        date_start = datetime(2019, 3, 2, 9, 0)
+        date_end = datetime(2019, 3, 2, 15, 0)
+        two_part_date = twopartdate(date_start, date_end)
+        assert two_part_date.get('part2_is_time')
+        assert two_part_date.get('part2') == '9 a.m.–3 p.m.'
+
+    @pytest.mark.skip(
+        reason='No validation currently exists for start date and end date.'
+    )
+    def test_two_part_date_invalid_dates(self):
+        """Test two part date with different dates."""
+        from django.utils.translation import activate
+        activate('en')
+        date_start = datetime(2019, 5, 9, 9, 0)
+        date_end = datetime(2019, 3, 2, 9, 0)
+        two_part_date = twopartdate(date_start, date_end)
+        assert two_part_date['part1'] > two_part_date['part2']
+
+    # def test_event_type_verbose_slug(self):

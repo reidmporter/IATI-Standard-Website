@@ -34,6 +34,7 @@ if 'TRAVIS' in os.environ:
     }
 
 USE_TZ = False
+USE_L10N = True
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media') # noqa
 

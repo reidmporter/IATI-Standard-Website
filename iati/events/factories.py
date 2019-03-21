@@ -76,6 +76,18 @@ class EventTypeFactory(factory.django.DjangoModelFactory):
     name = factory.Faker(
         'word',
     )
+    name_fr = factory.Faker(
+        'word',
+        locale='fr_FR',
+    )
+    name_es = factory.Faker(
+        'word',
+        locale='es_ES',
+    )
+    name_es = factory.Faker(
+        'word',
+        locale='pt_PT',
+    )
     slug = factory.LazyAttribute(lambda obj: slugify(obj.name))
 
 
