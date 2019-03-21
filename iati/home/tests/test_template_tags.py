@@ -10,6 +10,7 @@ from home.templatetags.iati_tags import (
     haspassed,
     standard_page_url,
     translation_links,
+    twopartdate,
 )
 
 
@@ -137,3 +138,13 @@ class TestTemplateTags():
         """Test past date returns True for haspassed."""
         past_date = datetime.strptime('Jan 1 2000', '%b %d %Y')
         assert haspassed(past_date) is True
+
+    def test_two_part_date_different_dates(self):
+        """Test two part date."""
+        import locale
+        locale.setlocale(locale.LC_ALL, 'en_GB.UTF-8')
+        date_start = datetime.strptime('9 May 2019 9:00AM', '%d %b %Y %I:%M%p')
+        date_end = datetime.strptime('2 Mar 2019 9:00AM', '%d %b %Y %I:%M%p')
+        two_part_date = twopartdate(date_start, date_end)
+
+        assert not two_part_date['part1'].startswith('9 May 2019')
