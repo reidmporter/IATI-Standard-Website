@@ -22,9 +22,22 @@ class BasePageFactory(PageFactory):
         locale='fr_FR',
         nb_words=4,
     )
+    title_es = factory.Faker(
+        'sentence',
+        locale='es_ES',
+        nb_words=4,
+    )
+    title_pt = factory.Faker(
+        'sentence',
+        locale='pt_PT',
+        nb_words=4,
+    )
     slug_fr = factory.LazyAttribute(lambda obj: slugify(obj.title_fr))
-    url_path_fr = factory.LazyAttribute(lambda n: "/%s/" % n)
-
+    slug_es = factory.LazyAttribute(lambda obj: slugify(obj.title_es))
+    slug_pt = factory.LazyAttribute(lambda obj: slugify(obj.title_pt))
+    url_path_fr = factory.LazyAttribute(lambda obj: '/fr/{}/'.format(obj.slug_fr))
+    url_path_es = factory.LazyAttribute(lambda obj: '/fr/{}/'.format(obj.slug_es))
+    url_path_pt = factory.LazyAttribute(lambda obj: '/fr/{}/'.format(obj.slug_pt))
     heading = factory.Faker(
         'sentence',
     )
@@ -33,12 +46,30 @@ class BasePageFactory(PageFactory):
         locale='fr_FR',
         nb_words=6,
     )
+    heading_es = factory.Faker(
+        'sentence',
+        locale='es_ES',
+        nb_words=6,
+    )
+    heading_pt = factory.Faker(
+        'sentence',
+        locale='pt_PT',
+        nb_words=6,
+    )
     excerpt = factory.Faker(
         'paragraph',
     )
     excerpt_fr = factory.Faker(
         'paragraph',
         locale='fr_FR',
+    )
+    excerpt_es = factory.Faker(
+        'paragraph',
+        locale='es_ES',
+    )
+    excerpt_pt = factory.Faker(
+        'paragraph',
+        locale='pt_PT',
     )
 
 

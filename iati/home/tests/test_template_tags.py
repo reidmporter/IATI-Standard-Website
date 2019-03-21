@@ -1,4 +1,5 @@
 import pytest
+from django.conf import settings
 from events.factories import EventIndexPageFactory, EventPageFactory
 from home.factories import StandardPageFactory
 from home.models import HomePage, StandardPage
@@ -6,6 +7,7 @@ from home.templatetags.iati_tags import (
     check_active,
     default_page_url,
     standard_page_url,
+    translation_links,
 )
 
 
@@ -117,3 +119,14 @@ class TestTemplateTags():
                 context=standard_page_response.context,
             )
         assert 'missing 1 required positional argument' in str(e)
+
+    def test_translation_links(self, client, standard_pages):
+        """Test translation links for active languages."""
+        standard_page = standard_pages.first()
+        response = client.get(standard_page.url, follow=True)
+        translations = translation_links(response.context, standard_page)
+        languages = translations['languages']
+        fr_language = next(item for item in languages if item['code'] == 'fr')
+        translation_response = client.get(fr_language['url'])
+        assert translation_response.status_code == 200
+        assert len(languages) == len(settings.ACTIVE_LANGUAGES)
