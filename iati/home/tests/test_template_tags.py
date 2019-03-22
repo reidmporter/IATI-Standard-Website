@@ -10,6 +10,7 @@ from home.templatetags.iati_tags import (
     event_type_verbose,
     check_active,
     default_page_url,
+    discover_tree_recursive,
     haspassed,
     standard_page_url,
     translation_links,
@@ -31,7 +32,6 @@ def events():
         parent=event_page_index,
         event_type=[random.choice(event_types)]
     )
-
     return event_page_index
 
 
@@ -188,10 +188,31 @@ class TestTemplateTags():
     @pytest.mark.skip(
         reason='Localization hasn not been added for event types'
     )
-    def test_event_type_verbose_slug_localized(self, client, events):
+    def test_event_type_verbose_slug_localized(self, events):
         """Test localized event type."""
         event = events.get_children().specific().last()
         an_event_type = event.event_type.first()
         activate('fr')
         verbose_event_type = event_type_verbose(an_event_type.slug_fr)
         assert an_event_type.name_fr == verbose_event_type
+
+    def test_discover_tree_recursive(self, events):
+        """Test tag for recursive tree."""
+        events_depth = events.depth
+        events_children_depth = events.depth + 1
+        recursive_tree = discover_tree_recursive(events, events)
+        assert len(recursive_tree) == events.get_children().live().count()
+        assert events_depth < events_children_depth
+
+    @pytest.mark.skip(
+        reason='Function does not work for nested children.'
+    )
+    def test_discover_tree_recursive_event_page_child(self, events):
+        """Test EventPage child in recursive tree."""
+        event_page = events.get_children().first()
+        event_page_child = EventPageFactory(
+            parent=event_page
+        )
+        recursive_tree = discover_tree_recursive(events, events)
+        event_child_in_tree = [x for x in recursive_tree if x['page_title'] == event_page_child.title]
+        assert event_page_child in event_child_in_tree
