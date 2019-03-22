@@ -3,7 +3,7 @@ import random
 from datetime import datetime
 from django.conf import settings
 from django.utils.translation import activate
-from events.factories import EventIndexPageFactory, EventPageFactory, EventTypeFactory
+from events.factories import EventIndexPageFactory, EventPageFactory, EventTypeFactory, FeaturedEventFactory
 from home.factories import StandardPageFactory
 from home.models import HomePage, StandardPage
 from home.templatetags.iati_tags import (
@@ -11,7 +11,9 @@ from home.templatetags.iati_tags import (
     check_active,
     default_page_url,
     discover_tree_recursive,
+    featured_events,
     haspassed,
+    side_panel,
     standard_page_url,
     translation_links,
     twopartdate,
@@ -216,3 +218,36 @@ class TestTemplateTags():
         recursive_tree = discover_tree_recursive(events, events)
         event_child_in_tree = [x for x in recursive_tree if x['page_title'] == event_page_child.title]
         assert event_page_child in event_child_in_tree
+
+    def test_side_panel_events(self, events):
+        """Test side panel for event index page."""
+        event_side_panel = side_panel(events)
+        assert event_side_panel['calling_page'] == events
+        assert len(event_side_panel['menu_to_display']) == len(events.get_children().live())
+
+    def test_featured_events(self, events):
+        """Test that featured events are included in query."""
+        event_pages = events.get_children().specific()
+
+        for event_page in event_pages:
+            FeaturedEventFactory(
+                event=event_page
+            )
+
+        featured = featured_events()
+        assert len(featured['featured_events']) == event_pages.count()
+
+    def test_featured_events_live_only(self, events):
+        """Test that featured events are included in query."""
+        draft_event_pages = EventPageFactory.create_batch(
+            10,
+            live=False
+        )
+
+        for event_page in draft_event_pages:
+            FeaturedEventFactory(
+                event=event_page
+            )
+
+        featured = featured_events()
+        assert len(featured['featured_events']) == 0
