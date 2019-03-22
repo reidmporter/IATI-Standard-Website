@@ -2,10 +2,12 @@ import pytest
 import random
 from datetime import datetime
 from django.conf import settings
+from django.utils.translation import activate
 from events.factories import EventIndexPageFactory, EventPageFactory, EventTypeFactory
 from home.factories import StandardPageFactory
 from home.models import HomePage, StandardPage
 from home.templatetags.iati_tags import (
+    event_type_verbose,
     check_active,
     default_page_url,
     haspassed,
@@ -23,11 +25,13 @@ def events():
         parent=home_page,
         title='Events',
     )
-    # event_types = EventTypeFactory.create_batch(10)
-    event_pages = EventPageFactory.create_batch(10, parent=event_page_index)
+    event_types = EventTypeFactory.create_batch(3)
+    event_pages = EventPageFactory.create_batch(
+        10,
+        parent=event_page_index,
+        event_type=[random.choice(event_types)]
+    )
 
-    for event in event_pages:
-        event.events = [EventTypeFactory()]
     return event_page_index
 
 
@@ -156,7 +160,6 @@ class TestTemplateTags():
 
     def test_two_part_date_same_dates(self):
         """Test two part date with same date, different times."""
-        from django.utils.translation import activate
         activate('en')
         date_start = datetime(2019, 3, 2, 9, 0)
         date_end = datetime(2019, 3, 2, 15, 0)
@@ -169,11 +172,26 @@ class TestTemplateTags():
     )
     def test_two_part_date_invalid_dates(self):
         """Test two part date with different dates."""
-        from django.utils.translation import activate
         activate('en')
         date_start = datetime(2019, 5, 9, 9, 0)
         date_end = datetime(2019, 3, 2, 9, 0)
         two_part_date = twopartdate(date_start, date_end)
         assert two_part_date['part1'] > two_part_date['part2']
 
-    # def test_event_type_verbose_slug(self):
+    def test_event_type_verbose_slug(self, client, events):
+        """Test that event name is returned for slug."""
+        event = events.get_children().specific().first()
+        an_event_type = event.event_type.first()
+        verbose_event_type = event_type_verbose(an_event_type.slug)
+        assert an_event_type.name == verbose_event_type
+
+    @pytest.mark.skip(
+        reason='Localization hasn not been added for event types'
+    )
+    def test_event_type_verbose_slug_localized(self, client, events):
+        """Test localized event type."""
+        event = events.get_children().specific().last()
+        an_event_type = event.event_type.first()
+        activate('fr')
+        verbose_event_type = event_type_verbose(an_event_type.slug_fr)
+        assert an_event_type.name_fr == verbose_event_type

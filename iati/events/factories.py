@@ -43,14 +43,14 @@ class EventPageFactory(BasePageFactory):
     feed_image = factory.SubFactory(ImageFactory)
 
     @factory.post_generation
-    def event_type(self, create, events, **kwargs):
-        """Generate M2M for event types."""
+    def event_type(self, create, extracted, **kwargs):
+        """Generate M2M for event extracted."""
         if not create:
             return
 
-        if events:
-            for event in events:
-                self.event_type.add(event)
+        if extracted:
+            for _type in extracted:
+                self.event_type.add(_type)
 
     class Params:
         starts_in_future = factory.Trait(
@@ -74,19 +74,23 @@ class EventTypeFactory(factory.django.DjangoModelFactory):
         model = EventType
 
     name = factory.Faker(
-        'word',
+        'sentence',
+        nb_words=3,
     )
     name_fr = factory.Faker(
-        'word',
+        'sentence',
         locale='fr_FR',
+        nb_words=3,
     )
     name_es = factory.Faker(
-        'word',
+        'sentence',
         locale='es_ES',
+        nb_words=3,
     )
     name_es = factory.Faker(
-        'word',
+        'sentence',
         locale='pt_PT',
+        nb_words=3,
     )
     slug = factory.LazyAttribute(lambda obj: slugify(obj.name))
 
