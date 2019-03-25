@@ -226,3 +226,6 @@ LOCALE_PATHS = (MODELTRANSLATION_LOCALE_PATH,)
 MODELTRANSLATION_PO_FILE = "iati.po"
 
 ZENDESK_REQUEST_URL = 'https://iati.zendesk.com/api/v2/requests.json'
+
+TEST_ZENDESK_API_KEY = os.environ.get('TEST_ZENDESK_API_KEY') or None
+TEST_ZENDESK_USER_EMAIL = os.environ.get('TEST_ZENDESK_USER_EMAIL') or None
