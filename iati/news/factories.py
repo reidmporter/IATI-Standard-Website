@@ -7,7 +7,6 @@ from news.models import (
     NewsCategory,
     NewsIndexPage,
     NewsPage,
-    RelatedNews,
 )
 
 
@@ -31,24 +30,14 @@ class NewsPageFactory(BasePageFactory):
     feed_image = factory.SubFactory(ImageFactory)
 
     @factory.post_generation
-    def news_categories(self, create, categories, **kwargs):
+    def news_categories(self, create, extracted, **kwargs):
         """Generate M2M for news categories."""
         if not create:
             return
 
-        if categories:
-            for category in categories:
+        if extracted:
+            for category in extracted:
                 self.news_categories.add(category)
-
-    @factory.post_generation
-    def related_news(self, create, articles, **kwargs):
-        """Generate M2M for related news."""
-        if not create:
-            return
-
-        if articles:
-            for article in articles:
-                self.related_news.add(article)
 
 
 class NewsCategoryFactory(factory.django.DjangoModelFactory):
@@ -59,15 +48,21 @@ class NewsCategoryFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker(
         'sentence',
-        nb_words=2,
+        nb_words=3,
+    )
+    name_fr = factory.Faker(
+        'sentence',
+        locale='fr_FR',
+        nb_words=3,
+    )
+    name_es = factory.Faker(
+        'sentence',
+        locale='es_ES',
+        nb_words=3,
+    )
+    name_es = factory.Faker(
+        'sentence',
+        locale='pt_PT',
+        nb_words=3,
     )
     slug = factory.LazyAttribute(lambda obj: slugify(obj.name))
-
-
-class RelatedNewsFactory(factory.django.DjangoModelFactory):
-    """Factory generating data for RelatedNews snippet."""
-
-    class Meta:
-        model = RelatedNews
-
-    related_post = factory.SubFactory(NewsPageFactory)
