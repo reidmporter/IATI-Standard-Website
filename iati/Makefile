@@ -29,3 +29,6 @@ pydocstyle: $(IATI_FOLDER)
 
 test: $(IATI_FOLDER)
 	pytest $(IATI_FOLDER)
+
+test-coverage: $(IATI_FOLDER)
+	pytest --cov=$(IATI_FOLDER)

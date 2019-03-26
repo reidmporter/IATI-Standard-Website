@@ -1,0 +1,9 @@
+[run]
+omit = 
+    */migrations/*
+    */tests/*
+    */__init__.py
+    iati/settings/*
+    iati/wsgi.py
+    */apps.py
+    manage.py
