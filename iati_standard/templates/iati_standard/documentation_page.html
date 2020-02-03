@@ -1,0 +1,7 @@
+<div class="is-typeset">
+    <h1>{{ self.data.extra_docs.TITLE }}<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h1>
+    {% for segment in self.data.extra_docs.SEGMENTS %}
+    <h2>{{ segment.TITLE }}</h2>
+    <p>{{ segment.CONTENT }}</p>
+    {% endfor %}
+</div>
