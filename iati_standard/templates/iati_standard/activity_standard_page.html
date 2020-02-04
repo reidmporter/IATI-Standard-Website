@@ -115,9 +115,9 @@
               </ul>
               {% if self.data.childnames %}
                 <h2>Subelements<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
-                {% for subelement in  self.data.childnames %}
+                {% for item in self.get_children %}
                 <ul>
-                    <li><a href="#">{{ subelement }}</a></li>
+                    <li><a href="{% pageurl item %}">{{ item }}</a></li>
                 </ul>
                 {% endfor %}
               {% endif %}
