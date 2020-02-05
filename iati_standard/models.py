@@ -11,6 +11,9 @@ from home.models import AbstractContentPage, DefaultPageHeaderImageMixin
 from iati_standard.panels import ReferenceDataPanel
 
 
+EXTRA_TITLES = ['Definition', 'Considerations', 'Changelog']
+
+
 class IATIStandardPage(DefaultPageHeaderImageMixin, AbstractContentPage):
     """A model for the IATI Standard Page, a landing page for IATI reference."""
 
@@ -119,6 +122,28 @@ class ActivityStandardPage(DefaultPageHeaderImageMixin, AbstractContentPage):
     has_been_recursed = models.BooleanField(default=False)
 
     translation_fields = AbstractContentPage.translation_fields + ["data"]
+
+    def split_extra_docs(self):
+        try:
+            split_extra = self.data['extra_docs'].split("\n\n")
+            extra_docs = []
+            extra_doc_dict = {
+                'section_title': split_extra.pop(0),
+                'content': [],
+            }
+            for segment in split_extra:
+                if segment in EXTRA_TITLES:
+                    extra_docs.append(extra_doc_dict.copy())
+                    extra_doc_dict = {
+                        'section_title': segment,
+                        'content': [],
+                    }
+                else:
+                    extra_doc_dict['content'].append(segment)
+            extra_docs.append(extra_doc_dict.copy())
+            return extra_docs
+        except KeyError:
+            return
 
     @cached_property
     def parent_path(self):
