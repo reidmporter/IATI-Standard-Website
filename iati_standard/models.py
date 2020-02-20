@@ -127,18 +127,30 @@ class ActivityStandardPage(DefaultPageHeaderImageMixin, AbstractContentPage):
         try:
             split_extra = self.data['extra_docs'].split("\n\n")
             extra_docs = []
+            codeblock = ''
             extra_doc_dict = {
                 'section_title': split_extra.pop(0),
                 'content': [],
             }
             for segment in split_extra:
                 if segment in EXTRA_TITLES:
+                    if len(codeblock) > 0:
+                        extra_doc_dict['content'].append(codeblock)
+                        codeblock = ''
                     extra_docs.append(extra_doc_dict.copy())
                     extra_doc_dict = {
                         'section_title': segment,
                         'content': [],
                     }
+                elif segment.startswith('<'):
+                    if codeblock=='':
+                        codeblock = segment
+                    else:
+                        codeblock += '\n'+segment
                 else:
+                    if codeblock != '':
+                        extra_doc_dict['content'].append(codeblock)
+                        codeblock = ''
                     extra_doc_dict['content'].append(segment)
             extra_docs.append(extra_doc_dict.copy())
             return extra_docs
