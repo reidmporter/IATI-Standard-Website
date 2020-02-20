@@ -1,7 +1,12 @@
 <div class="is-typeset">
-    <h1>{{ self.data.extra_docs.TITLE }}<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h1>
-    {% for segment in self.data.extra_docs.SEGMENTS %}
-    <h2>{{ segment.TITLE }}</h2>
-    <p>{{ segment.CONTENT }}</p>
+  {% for extra in self.split_extra_docs %}
+    <h2>{{ extra.section_title }}<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
+    {% for content in extra.content %}
+      {% if content|first in '<' %}
+        <p><code class="html">{{content}}</code></p>
+      {% else %}
+        <p>{{content}}</p>
+      {% endif %}
     {% endfor %}
+  {% endfor %}
 </div>

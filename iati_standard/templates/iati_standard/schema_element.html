@@ -52,16 +52,16 @@
       {% endfor %}
     </dl>
     {% endif %}
-
-    <h2>Example Usage<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
-    <p>{{ self.data.extra_docs }}</p>
-    <!-- <p>Example usage of <code class="html">iati-activities</code></p>
-    <p>This element is a parent for other all other elements of the IATI Activity Standard. This example provides a dateTime of 2014-09-10T07:15:37Z for the @generated-datetime attribute. A dateTime in UTC time is indicated by adding a Z behind the time This example date time format conforms to the xsd:dateTime standard. The @version attribute declares a valid code (2.x) from the Version codelist. The optional @linked-data-default attribute is also included.</p>
-    <pre><code class="html">{{ '<iati-activities generated-datetime="2014-09-10T07:15:37Z" version="2.03" linked-data-default="http://data.example.org/"></iati-activities>' | escape }}</code></pre>
-    <p>The iati-activities element acts as a container for other sub-elements. It is closed as follows:</p>
-    <p><code class="html">{{ '</iati-activities>' | escape }}</code></p>
-    <h2>Changelog<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
-    <p>Introduced the @linked-data-default attribute on iati-activities element</p> -->
+    {% for extra in self.split_extra_docs %}
+      <h2>{{ extra.section_title }}<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
+      {% for content in extra.content %}
+        {% if content|first in '<' %}
+          <p><code class="html">{{content}}</code></p>
+        {% else %}
+          <p>{{content}}</p>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
     <h2>Developer tools<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
     <p>Find the source of this documentation on github:</p>
     <ul>
