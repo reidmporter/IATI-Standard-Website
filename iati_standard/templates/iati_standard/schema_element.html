@@ -60,7 +60,7 @@
       <h2 id="{{extra.section_title}}">{{ extra.section_title }}<a class="m-header-link" href="#{{ extra.section_title }}" title="Permalink to this headline">¶</a></h2>
       {% for content in extra.content %}
         {% if content|first in '<' %}
-          <p><code class="html">{{content|linebreaksbr}}</code></p>
+          <p><code class="html">{{content}}</code></p>
         {% else %}
           <p>{{content}}</p>
         {% endif %}

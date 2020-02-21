@@ -124,6 +124,7 @@ class ActivityStandardPage(DefaultPageHeaderImageMixin, AbstractContentPage):
     translation_fields = AbstractContentPage.translation_fields + ["data"]
 
     def split_extra_docs(self):
+        """Funtion to split the 'extra_docs' elements into separate string segments."""
         try:
             split_extra = self.data['extra_docs'].split("\n\n")
             extra_docs = []
@@ -143,10 +144,20 @@ class ActivityStandardPage(DefaultPageHeaderImageMixin, AbstractContentPage):
                         'content': [],
                     }
                 elif segment.startswith('<'):
+                    # Grouping up code blocks as a single item in the array.
+                    # Spacing needs to be revised once the Extra-documentation formatting is changed and corrected.
                     if codeblock=='':
                         codeblock = segment
+                        spaces = 0
+                    elif segment.startswith('</'):
+                        spaces -= 1
+                        codeblock += '\n'+ ' '*spaces + segment
+                    elif segment.startswith('<!'):
+                        # Comments require no spacing.
+                        codeblock += '\n' + segment
                     else:
-                        codeblock += '\n'+segment
+                        spaces += 1
+                        codeblock += '\n'+ ' '*spaces + segment
                 else:
                     if codeblock != '':
                         extra_doc_dict['content'].append(codeblock)
