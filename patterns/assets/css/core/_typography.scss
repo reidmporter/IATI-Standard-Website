@@ -223,13 +223,13 @@
 		border-radius: 3px;
 		color: $iati-rain;
 		margin-bottom: 1em;
+		white-space: pre;
 	}
 
 	pre code {
 		display: block;
 		overflow-x: auto;
-        white-space: pre-wrap;
-        word-wrap: break-word;
+        white-space: pre;
 	}
 
 	dl {

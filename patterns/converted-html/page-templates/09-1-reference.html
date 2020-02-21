@@ -5181,9 +5181,7 @@
     <section>
         <div class="is-typeset">
             <h1>iati-activities<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h1>
-            <code class="html">
-                iati-activities
-            </code>
+            <code class="html">iati-activities</code>
             <p>This is the reference page for the XML element iati-activities.</p>
             <h2>Definition<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
             <p>Top-level list of one or more IATI activity records.</p>
@@ -5214,7 +5212,15 @@
             <h2>Example Usage<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
             <p>Example usage of <code class="html">iati-activities</code></p>
             <p>This element is a parent for other all other elements of the IATI Activity Standard. This example provides a dateTime of 2014-09-10T07:15:37Z for the @generated-datetime attribute. A dateTime in UTC time is indicated by adding a Z behind the time This example date time format conforms to the xsd:dateTime standard. The @version attribute declares a valid code (2.x) from the Version codelist. The optional @linked-data-default attribute is also included.</p>
-            <pre><code class="html">&lt;iati-activities generated-datetime=&quot;2014-09-10T07:15:37Z&quot; version=&quot;2.03&quot; linked-data-default=&quot;http://data.example.org/&quot;&gt;&lt;/iati-activities&gt;</code></pre>
+            <pre><code class="html">
+            &lt;country-budget-items vocabulary=&quot;4&quot;&gt;
+                &lt;budget-item code=&quot;1844&quot;&gt;
+                    &lt;description&gt;
+                        &lt;narrative&gt;Description text&lt;/narrative&gt;
+                    &lt;/description&gt;
+                &lt;/budget-item&gt;
+            &lt;/country-budget-items&gt;
+            </code></pre>
             <p>The iati-activities element acts as a container for other sub-elements. It is closed as follows:</p>
             <p><code class="html">&lt;/iati-activities&gt;</code></p>
             <h2>Changelog<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
