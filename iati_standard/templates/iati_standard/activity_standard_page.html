@@ -44,7 +44,13 @@
 
   		<div class="l-sidebar__body">
         <section>
-          {% include "iati_standard/schema_element.html" %}
+          {% if "activity-standard" in self.json_path or "organisation-standard" in self.json_path %}
+            {% include "iati_standard/schema_element.html" %}
+          {% elif "codelists" in self.json_path %}
+            {% include "iati_standard/codelist_element.html" %}
+          {% else %}
+            {% include "iati_standard/documentation.html" %}
+          {% endif %}
         </section>
       </div>
     </div>
