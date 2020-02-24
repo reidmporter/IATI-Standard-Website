@@ -131,14 +131,18 @@ def populate_index(observer, tag, previous_tag=None):
 
     for version in versions:
         standard_page = IATIStandardPage.objects.live().first()
-        objects = ReferenceData.objects.filter(tag=tag, json_path="{}/activity-standard".format(version))
+        objects = (ReferenceData.objects.filter(tag=tag, json_path="{}/activity-standard".format(version))
+        | ReferenceData.objects.filter(tag=tag, json_path="{}/organisation-standard".format(version))
+        | ReferenceData.objects.filter(tag=tag, json_path="{}/codelists".format(version)))
         for object in objects:
             version_page = create_or_update_from_object(standard_page, ActivityStandardPage, object)
         version_page.title = version
         version_page.slug = slugify(version)
         version_page.save_revision().publish()
         ancestor_list = [
-            "activity-standard"
+            "activity-standard",
+            "organisation-standard",
+            "codelists"
         ]
         recursive_create(ancestor_list, ReferenceData.objects.filter(tag=tag), version_page, version_page.json_path)
 
