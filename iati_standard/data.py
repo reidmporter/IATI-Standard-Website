@@ -131,13 +131,19 @@ def populate_index(observer, tag, previous_tag=None):
 
     for version in versions:
         standard_page = IATIStandardPage.objects.live().first()
-        objects = (ReferenceData.objects.filter(tag=tag, json_path="{}/activity-standard".format(version))
-        | ReferenceData.objects.filter(tag=tag, json_path="{}/organisation-standard".format(version))
-        | ReferenceData.objects.filter(tag=tag, json_path="{}/codelists".format(version)))
-        for object in objects:
-            version_page = create_or_update_from_object(standard_page, ActivityStandardPage, object)
-        version_page.title = version
-        version_page.slug = slugify(version)
+        try:
+            version_page = ActivityStandardPage.objects.get(
+                json_path="{}".format(version)
+            )
+            version_page.tag = tag
+        except ActivityStandardPage.DoesNotExist:
+            version_page = ActivityStandardPage(
+                title=version,
+                slug=slugify(version),
+                json_path="{}".format(version),
+                tag=tag
+            )
+            standard_page.add_child(instance=version_page)
         version_page.save_revision().publish()
         ancestor_list = [
             "activity-standard",
