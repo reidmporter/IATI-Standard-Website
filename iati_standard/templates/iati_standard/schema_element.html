@@ -5,8 +5,11 @@
         {{ self.data.path }}{{ self.data.element_name }}
     </code>
     <p>This is the reference page for the XML element {{ self.data.element_name }}.</p>
+    {% if self.data.schema_documentation %}
     <h2 id="definition">Definition<a class="m-header-link" href="#definition" title="Permalink to this headline">¶</a></h2>
     <p>{{ self.data.schema_documentation }}</p>
+    {% endif %}
+    {% if self.data.minOccurs or self.data.maxOccurs or self.data.extended_types or self.data.element_type or self.data.ruleset %}
     <h2 id="rules">Rules<a class="m-header-link" href="#rules" title="Permalink to this headline">¶</a></h2>
     {% if self.data.minOccurs and self.data.maxOccurs %}
       <p>
@@ -34,8 +37,9 @@
     {% for rule in self.data.ruleset %}
       <p>{{ rule }}</p>
     {% endfor %}
-    <h2 id="attributes">Attributes<a class="m-header-link" href="#attributes" title="Permalink to this headline">¶</a></h2>
+    {% endif %}
     {% if self.data.attributes %}
+    <h2 id="attributes">Attributes<a class="m-header-link" href="#attributes" title="Permalink to this headline">¶</a></h2>
     <dl>
       {% for att in self.data.attributes %}
         <dt>@{{ att.attribute }}</dt>

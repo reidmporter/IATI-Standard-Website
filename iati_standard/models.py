@@ -11,7 +11,7 @@ from home.models import AbstractContentPage, DefaultPageHeaderImageMixin
 from iati_standard.panels import ReferenceDataPanel
 
 
-EXTRA_TITLES = ['Definition', 'Considerations', 'Changelog']
+EXTRA_TITLES = ['Definition', 'Considerations', 'Changelog', 'Contents']
 
 
 class IATIStandardPage(DefaultPageHeaderImageMixin, AbstractContentPage):

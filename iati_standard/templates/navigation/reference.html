@@ -1,0 +1,12 @@
+<button class="navigation-secondary-toggle" type="button" id="navigation-secondary-toggle">pages in this section</button>
+<nav class="navigation-secondary navigation-secondary--reference" id="navigation-secondary" data-nested-list>
+    <form>
+        <ul class="navigation-secondary__list">
+            {% with item_class='navigation-secondary__item' item_num=0 %}
+              {% for item in self.get_children %}
+                  {% include 'navigation/reference-item.html' %}
+              {% endfor %}
+            {% endwith %}
+        </ul>
+    </form>
+</nav>

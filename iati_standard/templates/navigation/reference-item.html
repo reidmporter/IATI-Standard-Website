@@ -1,0 +1,11 @@
+<li class="navigation-secondary__child__item--{{ item_num }} {{ item_class }} {{ item.active_class }} {{ item.open_class }}" data-nested-nav-item>
+   {% if item.get_children %}
+       <button name="toggle" value="{{ item }}:{{ item.open_class }}" data-nested-nav-toggle></button>
+   {% endif %}
+   <a href="{{ item.url }}">{{ item }}</a>
+   {% if item.get_children %}
+       {% with list=item.get_children %}
+        {% include 'navigation/reference-list.html' %}
+       {% endwith %}
+   {% endif %}
+</li>

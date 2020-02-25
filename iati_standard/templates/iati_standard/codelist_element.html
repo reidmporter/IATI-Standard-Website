@@ -6,7 +6,7 @@
     <p>This is a <a href="#">{{ self.data.codelist_json.metadata.category }}</a> Codelist.</p>
     <h2>Use this codelist for<a class="m-header-link" href="#header-id" title="Permalink to this headline">¶</a></h2>
     <ul>
-        {% for item in self.data.codelist_json.codelist_paths %}
+        {% for item in self.data.codelist_paths %}
           <li><a href="#">{{ item }}</a></li>
         {% endfor %}
     </ul>
