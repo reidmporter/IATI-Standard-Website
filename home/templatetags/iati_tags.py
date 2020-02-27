@@ -182,6 +182,7 @@ def discover_tree_recursive(current_page, calling_page):
 
 
 def reference_tree_recursive(current_page, calling_page):
+    """Obtain the page tree for reference pages."""
     parent_menu = []
     children = current_page.get_children().specific()
     if calling_page.live:
@@ -190,7 +191,7 @@ def reference_tree_recursive(current_page, calling_page):
         page_dict = {
             'page_title': child.heading.title() if child.depth==5 else (child.heading if child.heading else child.title),
             'page_slug': child.slug,
-            'page_depth': child.depth-5,
+            'page_depth': child.depth-5, # lowest depth for ActivityStandardPage is for version pages at 4
             'has_children': True if child.get_children() else False,
             'is_active': (child == calling_page),
             'open_class': "open" if (child in calling_page.get_ancestors().specific() or (child == calling_page)) else ""
@@ -222,7 +223,7 @@ def side_panel(calling_page):
 
 @register.inclusion_tag('home/includes/reference-sidepanel.html')
 def reference_side_panel(calling_page):
-    """Return the side panel given the page hierarchy."""
+    """Return the side panel for reference pages given the page hierarchy."""
     if calling_page.depth <= 4:
         main_section = calling_page
     else:
@@ -234,6 +235,7 @@ def reference_side_panel(calling_page):
             main_section = main_section.first().specific
         except AttributeError:
             return {"menu_to_display": None, "calling_page": calling_page}
+    # We build the tree from the children of the top level ActivityStandardPage (version page)
     menu_to_display = reference_tree_recursive(main_section.get_children().first(), calling_page)
     return {"menu_to_display": menu_to_display, "calling_page": calling_page}
 
