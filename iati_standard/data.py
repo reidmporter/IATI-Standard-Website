@@ -2,7 +2,7 @@
 import requests
 import io
 import os
-import json
+import xmltodict
 from zipfile import ZipFile
 from django.conf import settings
 from django.utils.text import slugify
@@ -60,23 +60,20 @@ def populate_data(observer, data, tag):
 
     if data:
         for item in extract_zip(download_zip(data.url)):
-            if os.path.splitext(item.name)[1] == ".json":
-                try:
-                    raw_json_path = os.path.splitext(item.name)[0]
-                    version = raw_json_path.split("/")[1]
-                    language = raw_json_path.split("/")[2]
-                    if language in [lang[0] for lang in settings.ACTIVE_LANGUAGES]:
-                        path_remainder = "/".join(raw_json_path.split("/")[3:])
-                        json_path = "/".join([version, path_remainder])
-                        ReferenceData.objects.update_or_create(
-                            json_path=json_path,
-                            version=version,
-                            language=language,
-                            tag=tag,
-                            defaults={'data': json.loads(item.read())},
-                        )
-                except json.decoder.JSONDecodeError:
-                    pass
+            if os.path.splitext(item.name)[1] == ".xml":
+                raw_json_path = os.path.splitext(item.name)[0]
+                version = raw_json_path.split("/")[1]
+                language = raw_json_path.split("/")[2]
+                if language in [lang[0] for lang in settings.ACTIVE_LANGUAGES]:
+                    path_remainder = "/".join(raw_json_path.split("/")[3:])
+                    json_path = "/".join([version, path_remainder])
+                    ReferenceData.objects.update_or_create(
+                        json_path=json_path,
+                        version=version,
+                        language=language,
+                        tag=tag,
+                        defaults={'data': xmltodict.parse(item.read())['root']},
+                    )
 
     else:
         raise ValueError('No data available for tag: %s' % tag)
