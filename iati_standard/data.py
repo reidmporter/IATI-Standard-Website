@@ -3,6 +3,7 @@ import requests
 import io
 import os
 import xmltodict
+from xml.parsers.expat import ExpatError
 from zipfile import ZipFile
 from django.conf import settings
 from django.utils.text import slugify
@@ -67,13 +68,24 @@ def populate_data(observer, data, tag):
                 if language in [lang[0] for lang in settings.ACTIVE_LANGUAGES]:
                     path_remainder = "/".join(raw_json_path.split("/")[3:])
                     json_path = "/".join([version, path_remainder])
-                    ReferenceData.objects.update_or_create(
-                        json_path=json_path,
-                        version=version,
-                        language=language,
-                        tag=tag,
-                        defaults={'data': xmltodict.parse(item.read())['root']},
-                    )
+                    try:
+                        root = xmltodict.parse(item.read())['root']
+                        ReferenceData.objects.update_or_create(
+                            json_path=json_path,
+                            version=version,
+                            language=language,
+                            tag=tag,
+                            defaults={'data': root},
+                        )
+                    except ExpatError:  # BOM?
+                        root = xmltodict.parse(item.read()[3:])['root']
+                        ReferenceData.objects.update_or_create(
+                            json_path=json_path,
+                            version=version,
+                            language=language,
+                            tag=tag,
+                            defaults={'data': root},
+                        )
 
     else:
         raise ValueError('No data available for tag: %s' % tag)
