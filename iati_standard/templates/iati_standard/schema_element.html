@@ -1,10 +1,12 @@
 {% load wagtailcore_tags iati_tags i18n %}
 <div class="is-typeset">
+    {% if self.data.path and self.data.element_name %}
     <h1 id="title">{{ self.name }}<a class="m-header-link" href="#title" title="Permalink to this headline">¶</a></h1>
     <code class="html">
         {{ self.data.path }}{{ self.data.element_name }}
     </code>
     <p>This is the reference page for the XML element {{ self.data.element_name }}.</p>
+    {% endif %}
     {% if self.data.schema_documentation %}
     <h2 id="definition">Definition<a class="m-header-link" href="#definition" title="Permalink to this headline">¶</a></h2>
     <p>{{ self.data.schema_documentation }}</p>

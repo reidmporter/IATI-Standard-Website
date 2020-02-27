@@ -148,7 +148,9 @@ def populate_index(observer, tag, previous_tag=None):
         ancestor_list = [
             "activity-standard",
             "organisation-standard",
-            "codelists"
+            "codelists",
+            "rulesets",
+            "schema"
         ]
         recursive_create(ancestor_list, ReferenceData.objects.filter(tag=tag), version_page, version_page.json_path)
 

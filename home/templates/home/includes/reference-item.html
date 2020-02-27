@@ -1,0 +1,12 @@
+{% load wagtail_modeltranslation iati_tags i18n %}
+<li class="navigation-secondary__child__item--{{ item.page_depth }} {{ item_class }} {% if item.is_active %}active{% endif %} {{ item.open_class }}" data-nested-nav-item>
+   {% if item.has_children %}
+       <button name="toggle" value="{{ item.page_title }}:{{ item.open_class }}" data-nested-nav-toggle></button>
+   {% endif %}
+   <a href="{% slugurl_trans item.page_slug %}">{{ item.page_title }}</a>
+   {% if item.has_children %}
+       {% with list=item.children %}
+        {% include 'home/includes/reference-list.html' %}
+       {% endwith %}
+   {% endif %}
+</li>

@@ -16,7 +16,7 @@ from contact.models import ContactPage
 from events.models import EventIndexPage, EventType, FeaturedEvent
 from guidance_and_support.models import GuidanceAndSupportPage, CommunityPage
 from news.models import NewsIndexPage, NewsCategory
-from iati_standard.models import IATIStandardPage
+from iati_standard.models import IATIStandardPage, ActivityStandardPage
 from using_data.models import UsingDataPage
 from tools.models import ToolsListingPage
 
@@ -171,12 +171,33 @@ def discover_tree_recursive(current_page, calling_page):
             'page_title': child.heading if child.heading else child.title,
             'page_slug': child.slug,
             'page_depth': child.depth,
-            'is_active': (child in calling_page.get_ancestors().specific()) or (child == calling_page)
+            'is_active': (child in calling_page.get_ancestors().specific()) or (child == calling_page),
         }
         parent_menu.append(page_dict)
         if page_dict['is_active']:
             child_menu = discover_tree_recursive(child, calling_page)
             parent_menu = parent_menu + child_menu
+            page_dict['children'] = child_menu
+    return parent_menu
+
+
+def reference_tree_recursive(current_page, calling_page):
+    parent_menu = []
+    children = current_page.get_children().specific()
+    if calling_page.live:
+        children = children.live()
+    for child in children:
+        page_dict = {
+            'page_title': child.heading.title() if child.depth==5 else (child.heading if child.heading else child.title),
+            'page_slug': child.slug,
+            'page_depth': child.depth-5,
+            'has_children': True if child.get_children() else False,
+            'is_active': (child == calling_page),
+            'open_class': "open" if (child in calling_page.get_ancestors().specific() or (child == calling_page)) else ""
+        }
+        child_menu = reference_tree_recursive(child, calling_page)
+        page_dict['children'] = child_menu
+        parent_menu.append(page_dict)
     return parent_menu
 
 
@@ -196,6 +217,24 @@ def side_panel(calling_page):
             return {"menu_to_display": None, "calling_page": calling_page}
 
     menu_to_display = discover_tree_recursive(main_section, calling_page)
+    return {"menu_to_display": menu_to_display, "calling_page": calling_page}
+
+
+@register.inclusion_tag('home/includes/reference-sidepanel.html')
+def reference_side_panel(calling_page):
+    """Return the side panel given the page hierarchy."""
+    if calling_page.depth <= 4:
+        main_section = calling_page
+    else:
+        home_page = HomePage.objects.live().first()
+        main_section = home_page.get_children().ancestor_of(calling_page)
+        if calling_page.live:
+            main_section = main_section.live()
+        try:
+            main_section = main_section.first().specific
+        except AttributeError:
+            return {"menu_to_display": None, "calling_page": calling_page}
+    menu_to_display = reference_tree_recursive(main_section.get_children().first(), calling_page)
     return {"menu_to_display": menu_to_display, "calling_page": calling_page}
 
 
