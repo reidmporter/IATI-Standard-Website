@@ -163,6 +163,8 @@ class ActivityStandardPage(DefaultPageHeaderImageMixin, AbstractContentPage):
                         extra_doc_dict['content'].append(codeblock)
                         codeblock = ''
                     extra_doc_dict['content'].append(segment)
+                if codeblock != '':
+                    extra_doc_dict['content'].append(codeblock)
             extra_docs.append(extra_doc_dict.copy())
             return extra_docs
         except KeyError:
