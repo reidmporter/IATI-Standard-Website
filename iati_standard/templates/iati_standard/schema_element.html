@@ -45,11 +45,11 @@
               <p>This attribute is required.</p>
             {% endif %}
             <p>This value must be of type {{ att.attribute_type }}.</p>
-             {% for codelist in att.match_codelists %}
-             {% if codelist.1 %}
-             <p>This value must be on the <a href="#">{{ codelist.0 }}</a> codelist, if the relevant vocabulary is used.</p>
+             {% for codelist_0, codelist_1 in att.match_codelists.items %}
+             {% if codelist_1 != "false" %}
+             <p>This value must be on the <a href="#">{{ codelist_0 }}</a> codelist, if the relevant vocabulary is used.</p>
              {% else %}
-              <p>This value must be on the <a href="#">{{ codelist.0 }}</a> codelist.</p>
+              <p>This value must be on the <a href="#">{{ codelist_0 }}</a> codelist.</p>
              {% endif %}
              {% endfor %}
         </dd>

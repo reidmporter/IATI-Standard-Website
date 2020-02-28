@@ -3,12 +3,12 @@ import requests
 import io
 import os
 import xmltodict
-from xml.parsers.expat import ExpatError
 from zipfile import ZipFile
 from django.conf import settings
 from django.utils.text import slugify
 from iati_standard.models import ReferenceData, ActivityStandardPage, IATIStandardPage
 from iati_standard.edit_handlers import GithubAPI
+from xml.parsers.expat import ExpatError
 
 
 def download_zip(url):
@@ -69,7 +69,7 @@ def populate_data(observer, data, tag):
                     path_remainder = "/".join(raw_json_path.split("/")[3:])
                     json_path = "/".join([version, path_remainder])
                     try:
-                        root = xmltodict.parse(item.read())['root']
+                        root = dict(xmltodict.parse(item.read())['root'])
                         ReferenceData.objects.update_or_create(
                             json_path=json_path,
                             version=version,
@@ -77,15 +77,8 @@ def populate_data(observer, data, tag):
                             tag=tag,
                             defaults={'data': root},
                         )
-                    except ExpatError:  # BOM?
-                        root = xmltodict.parse(item.read()[3:])['root']
-                        ReferenceData.objects.update_or_create(
-                            json_path=json_path,
-                            version=version,
-                            language=language,
-                            tag=tag,
-                            defaults={'data': root},
-                        )
+                    except ExpatError:
+                        pass
 
     else:
         raise ValueError('No data available for tag: %s' % tag)
