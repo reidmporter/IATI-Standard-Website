@@ -538,7 +538,7 @@
                             },
                             {
                                 "highlight": true,
-                                "no_link_heading": true,
+                                "no_link_heading": false,
                                 "heading": "Finances, reports and minutes",
                                 "list": [
                                     "IATI finances",
